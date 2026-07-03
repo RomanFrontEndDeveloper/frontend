@@ -1,0 +1,104 @@
+{
+	"compilerOptions": {
+		// До якої версії JavaScript компілювати TypeScript.
+		// ES2017 підтримує async/await та багато сучасних можливостей.
+		"target": "ES2017",
+
+		// Які вбудовані бібліотеки JavaScript і браузера будуть доступні.
+		"lib": [
+			"dom", // document, window, HTML елементи
+			"dom.iterable", // можливість перебирати DOM-колекції через for...of
+			"esnext" // найновіші можливості JavaScript
+		],
+
+		// Дозволяє імпортувати .js файли разом із .ts
+		"allowJs": true,
+
+		// Не перевіряти типи всередині бібліотек (node_modules).
+		// Значно пришвидшує компіляцію.
+		"skipLibCheck": true,
+
+		// Увімкнути сувору перевірку типів.
+		// Це одна з найважливіших опцій TypeScript.
+		"strict": true,
+
+		// Не створювати JavaScript файли після компіляції.
+		// Next.js сам займається компіляцією.
+		"noEmit": true,
+
+		// Дозволяє використовувати import навіть для CommonJS модулів.
+		// Наприклад:
+		// import express from "express"
+		"esModuleInterop": true,
+
+		// Використовувати сучасну систему ES Modules.
+		"module": "esnext",
+
+		// Як TypeScript буде знаходити імпортовані файли.
+		// bundler використовується в Next.js 15, Vite та інших сучасних збірниках.
+		"moduleResolution": "bundler",
+
+		// Дозволяє імпортувати JSON як звичайний модуль.
+		// import data from "./data.json"
+		"resolveJsonModule": true,
+
+		// Кожен файл компілюється окремо.
+		// Необхідно для Next.js, Babel і Turbopack.
+		"isolatedModules": true,
+
+		// Використовувати новий JSX трансформер React 17+.
+		// Не потрібно писати:
+		// import React from "react";
+		"jsx": "react-jsx",
+
+		// Зберігати інформацію про попередню компіляцію.
+		// Наступний запуск буде швидшим.
+		"incremental": true,
+
+		// Плагіни TypeScript.
+		"plugins": [
+			{
+				// Плагін Next.js.
+				// Дає правильні підказки та перевірки для App Router.
+				"name": "next"
+			}
+		],
+
+		// Створення псевдонімів (alias) для імпортів.
+		"paths": {
+			// Тепер можна писати:
+			// import Button from "@/components/Button"
+			// замість
+			// import Button from "../../../components/Button"
+			"@/*": ["./*"]
+		}
+	},
+
+	// Які файли TypeScript потрібно компілювати.
+	"include": [
+		// Автоматично створюється Next.js.
+		// Містить типи для Next.
+		"next-env.d.ts",
+
+		// Усі .ts файли.
+		"**/*.ts",
+
+		// Усі .tsx файли (React компоненти).
+		"**/*.tsx",
+
+		// Типи, які генерує Next після build/dev.
+		".next/types/**/*.ts",
+
+		// Типи для режиму розробки.
+		".next/dev/types/**/*.ts",
+
+		// TypeScript ES Modules.
+		"**/*.mts"
+	],
+
+	// Що ігнорувати.
+	"exclude": [
+		// Не перевіряти бібліотеки.
+		"node_modules"
+	]
+}
