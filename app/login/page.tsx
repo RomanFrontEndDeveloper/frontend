@@ -1,6 +1,29 @@
-import { Button, Card, Divider, Input } from '@/shared/ui';
+'use client';
+
+import { Button, Card, Divider, Input, InputError } from '@/shared/ui';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '@/shared/validation/auth';
+
+type LoginFormData = {
+	email: string;
+	password: string;
+};
+
+const onSubmit = async (data: LoginFormData) => {
+	await new Promise((resolve) => setTimeout(resolve, 2000));
+	console.log(data);
+};
 
 export default function LoginPage() {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors, isSubmitting },
+	} = useForm<LoginFormData>({
+		resolver: zodResolver(loginSchema),
+	});
+
 	return (
 		<section className='flex flex-1 items-center justify-center py-20'>
 			<Card className='w-full max-w-md'>
@@ -12,12 +35,32 @@ export default function LoginPage() {
 
 				<Divider className='my-6' />
 
-				<form className='space-y-4'>
-					<Input type='email' placeholder='Email' />
+				<form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+					<div>
+						<Input
+							type='email'
+							placeholder='Email'
+							error={!!errors.email}
+							{...register('email')}
+						/>
 
-					<Input type='password' placeholder='Password' />
+						<InputError message={errors.email?.message} />
+					</div>
 
-					<Button className='w-full'>Sign In</Button>
+					<div>
+						<Input
+							type='password'
+							placeholder='Password'
+							error={!!errors.password}
+							{...register('password')}
+						/>
+
+						<InputError message={errors.password?.message} />
+					</div>
+
+					<Button className='w-full' disabled={isSubmitting}>
+						{isSubmitting ? 'Signing In...' : 'Sign In'}
+					</Button>
 				</form>
 			</Card>
 		</section>
