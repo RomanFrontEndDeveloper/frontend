@@ -3,16 +3,17 @@
 import { Button, Card, Divider, Input, InputError } from '@/shared/ui';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema } from '@/shared/validation/auth';
-
-type LoginFormData = {
-	email: string;
-	password: string;
-};
+import { loginSchema, type LoginFormData } from '@/shared/validation/auth';
+import { authApi } from '@/shared/api';
 
 const onSubmit = async (data: LoginFormData) => {
-	await new Promise((resolve) => setTimeout(resolve, 2000));
-	console.log(data);
+	try {
+		const response = await authApi.login(data);
+
+		console.log(response);
+	} catch (error) {
+		console.error(error);
+	}
 };
 
 export default function LoginPage() {
