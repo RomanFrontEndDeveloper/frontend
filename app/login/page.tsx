@@ -10,7 +10,9 @@ const onSubmit = async (data: LoginFormData) => {
 	try {
 		const response = await authApi.login(data);
 
-		console.log(response);
+		localStorage.setItem('token', response.token);
+
+		console.log('Login successful:', response);
 	} catch (error) {
 		console.error(error);
 	}
