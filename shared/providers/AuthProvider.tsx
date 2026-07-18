@@ -32,6 +32,8 @@ export const AuthProvider = ({ children }: Props) => {
 				setUser({
 					id: profile.user._id,
 					email: profile.user.email,
+					createdAt: profile.user.createdAt,
+					updatedAt: profile.user.updatedAt,
 				});
 			} catch (error) {
 				console.error('Authentication failed:', error);
