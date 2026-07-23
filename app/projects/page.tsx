@@ -6,6 +6,7 @@ import { Card, Button } from '@/shared/ui';
 import { projectApi } from '@/shared/api/projectApi';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 type Project = {
 	_id: string;
@@ -14,6 +15,8 @@ type Project = {
 	owner: string;
 	createdAt: string;
 	updatedAt: string;
+	imageUrl?: string;
+	imagePublicId?: string;
 };
 
 export default function ProjectsPage() {
@@ -82,6 +85,16 @@ export default function ProjectsPage() {
 							<h2 className='text-xl font-semibold'>
 								{project.title}
 							</h2>
+
+							{project.imageUrl && (
+								<Image
+									src={project.imageUrl}
+									alt={project.title}
+									width={600}
+									height={300}
+									className='mb-4 h-48 w-full rounded-lg object-cover'
+								/>
+							)}
 
 							<p className='mt-2 text-gray-600'>
 								{project.description}

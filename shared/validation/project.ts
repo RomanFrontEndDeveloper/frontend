@@ -13,3 +13,7 @@ export const createProjectSchema = z.object({
 });
 
 export type CreateProjectFormData = z.infer<typeof createProjectSchema>;
+
+export type CreateProjectData = CreateProjectFormData & {
+	image?: File | null;
+};

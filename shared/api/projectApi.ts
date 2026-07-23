@@ -1,9 +1,5 @@
 import { axiosInstance } from './axios';
-
-type CreateProjectData = {
-	title: string;
-	description: string;
-};
+import { CreateProjectData } from '@/shared/validation/project';
 
 type Project = {
 	_id: string;
@@ -12,6 +8,8 @@ type Project = {
 	owner: string;
 	createdAt: string;
 	updatedAt: string;
+	imageUrl?: string;
+	imagePublicId?: string;
 };
 
 type CreateProjectResponse = {
@@ -22,9 +20,23 @@ type CreateProjectResponse = {
 
 export const projectApi = {
 	create: async (data: CreateProjectData) => {
+		const formData = new FormData();
+
+		formData.append('title', data.title);
+		formData.append('description', data.description);
+
+		if (data.image) {
+			formData.append('image', data.image);
+		}
+
 		const response = await axiosInstance.post<CreateProjectResponse>(
 			'/projects',
-			data,
+			formData,
+			{
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+			},
 		);
 
 		return response.data;

@@ -1,10 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { projectApi } from '@/shared/api/projectApi';
-
 import { Button, Card, Divider, Input } from '@/shared/ui';
 import {
 	createProjectSchema,
@@ -22,9 +22,16 @@ export default function CreateProjectPage() {
 
 	const router = useRouter();
 
+	const [image, setImage] = useState<File | null>(null);
+
 	const onSubmit = async (data: CreateProjectFormData) => {
+		const projectData = {
+			...data,
+			image,
+		};
+
 		try {
-			await projectApi.create(data);
+			await projectApi.create(projectData);
 
 			router.push('/projects');
 		} catch (error) {
@@ -79,6 +86,25 @@ export default function CreateProjectPage() {
 							{errors.description.message}
 						</p>
 					)}
+				</div>
+
+				<div>
+					<label htmlFor='image' className='mb-2 block font-medium'>
+						Project Image
+					</label>
+
+					<Input
+						id='image'
+						type='file'
+						accept='image/*'
+						onChange={(e) => {
+							const file = e.target.files?.[0];
+
+							if (file) {
+								setImage(file);
+							}
+						}}
+					/>
 				</div>
 
 				<Button className='w-full' type='submit'>
