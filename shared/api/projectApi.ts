@@ -57,4 +57,14 @@ export const projectApi = {
 
 		return response.data;
 	},
+
+	delete: async (id: string) => {
+		const response = await axiosInstance.delete<{
+			success: boolean;
+			message: string;
+			project: Project;
+		}>(`/projects/${id}`);
+
+		return response.data;
+	},
 };
