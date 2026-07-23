@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Card } from '@/shared/ui';
 import { projectApi } from '@/shared/api/projectApi';
+import Link from 'next/link';
 
 type Project = {
 	_id: string;
@@ -59,6 +59,15 @@ export default function ProjectsPage() {
 							<p className='mt-2 text-gray-600'>
 								{project.description}
 							</p>
+
+							<div className='mt-4'>
+								<Link
+									href={`/projects/${project._id}/edit`}
+									className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
+								>
+									Edit
+								</Link>
+							</div>
 						</Card>
 					))
 				)}
