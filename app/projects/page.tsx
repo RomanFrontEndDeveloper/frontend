@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
-import { Card, Button } from '@/shared/ui';
+import { Card, Button, Input } from '@/shared/ui';
 import { projectApi } from '@/shared/api/projectApi';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -22,23 +22,38 @@ type Project = {
 export default function ProjectsPage() {
 	const [projects, setProjects] = useState<Project[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [searchLoading, setSearchLoading] = useState(false);
+	const [search, setSearch] = useState('');
+	const [debouncedSearch, setDebouncedSearch] = useState('');
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedSearch(search);
+		}, 300);
+
+		return () => clearTimeout(timer);
+	}, [search]);
 
 	const router = useRouter();
 
 	useEffect(() => {
 		const loadProjects = async () => {
 			try {
-				const data = await projectApi.getAll();
+				setSearchLoading(true);
+
+				const data = await projectApi.getAll(debouncedSearch);
+
 				setProjects(data.projects);
 			} catch (error) {
 				console.error(error);
 			} finally {
 				setLoading(false);
+				setSearchLoading(false);
 			}
 		};
 
 		loadProjects();
-	}, []);
+	}, [debouncedSearch]);
 
 	const handleDelete = async (id: string) => {
 		const confirmed = window.confirm(
@@ -68,17 +83,36 @@ export default function ProjectsPage() {
 
 	return (
 		<ProtectedRoute>
-			<div className='mx-auto mt-10 max-w-3xl space-y-4'>
-				<div className='flex items-center justify-between'>
-					<h1 className='text-3xl font-bold'>Projects</h1>
+			<div className='mx-auto mt-10 max-w-3xl space-y-6'>
+				<h1 className='text-3xl font-bold'>Projects</h1>
 
-					<Button onClick={() => router.push('/projects/create')}>
+				<div className='flex items-start gap-4'>
+					<div className='flex-1'>
+						<Input
+							type='text'
+							placeholder='Search projects...'
+							value={search}
+							onChange={(e) => setSearch(e.target.value)}
+							className='max-w-xl'
+						/>
+
+						<div className='flex h-16 items-center justify-center mt-2'>
+							{searchLoading && (
+								<div className='h-12 w-12 animate-spin rounded-full border-4 border-gray-600 border-t-blue-600' />
+							)}
+						</div>
+					</div>
+
+					<Button
+						onClick={() => router.push('/projects/create')}
+						className='shrink-0'
+					>
 						Create Project
 					</Button>
 				</div>
 
 				{projects.length === 0 ? (
-					<p>No projects yet.</p>
+					<p>No projects found.</p>
 				) : (
 					projects.map((project) => (
 						<Card key={project._id}>

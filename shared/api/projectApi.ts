@@ -42,11 +42,15 @@ export const projectApi = {
 		return response.data;
 	},
 
-	getAll: async () => {
+	getAll: async (search = '') => {
 		const response = await axiosInstance.get<{
 			success: boolean;
 			projects: Project[];
-		}>('/projects');
+		}>('/projects', {
+			params: {
+				search,
+			},
+		});
 
 		return response.data;
 	},
