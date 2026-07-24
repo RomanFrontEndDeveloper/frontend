@@ -1,6 +1,8 @@
 import { axiosInstance } from './axios';
 import { CreateProjectData } from '@/shared/validation/project';
 
+const DEFAULT_LIMIT = 3;
+
 type Project = {
 	_id: string;
 	title: string;
@@ -42,13 +44,18 @@ export const projectApi = {
 		return response.data;
 	},
 
-	getAll: async (search = '') => {
+	getAll: async (search = '', page = 1, limit = DEFAULT_LIMIT) => {
 		const response = await axiosInstance.get<{
 			success: boolean;
 			projects: Project[];
+			currentPage: number;
+			totalPages: number;
+			totalProjects: number;
 		}>('/projects', {
 			params: {
 				search,
+				page,
+				limit,
 			},
 		});
 

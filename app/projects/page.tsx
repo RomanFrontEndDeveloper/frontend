@@ -25,6 +25,9 @@ export default function ProjectsPage() {
 	const [searchLoading, setSearchLoading] = useState(false);
 	const [search, setSearch] = useState('');
 	const [debouncedSearch, setDebouncedSearch] = useState('');
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const limit = 3;
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -34,6 +37,10 @@ export default function ProjectsPage() {
 		return () => clearTimeout(timer);
 	}, [search]);
 
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [debouncedSearch]);
+
 	const router = useRouter();
 
 	useEffect(() => {
@@ -41,9 +48,15 @@ export default function ProjectsPage() {
 			try {
 				setSearchLoading(true);
 
-				const data = await projectApi.getAll(debouncedSearch);
+				const data = await projectApi.getAll(
+					debouncedSearch,
+					currentPage,
+					limit,
+				);
 
 				setProjects(data.projects);
+				setCurrentPage(data.currentPage);
+				setTotalPages(data.totalPages);
 			} catch (error) {
 				console.error(error);
 			} finally {
@@ -53,7 +66,7 @@ export default function ProjectsPage() {
 		};
 
 		loadProjects();
-	}, [debouncedSearch]);
+	}, [debouncedSearch, currentPage]);
 
 	const handleDelete = async (id: string) => {
 		const confirmed = window.confirm(
@@ -153,6 +166,29 @@ export default function ProjectsPage() {
 						</Card>
 					))
 				)}
+			</div>
+			<div className='mt-8 flex items-center justify-center gap-4 my-8'>
+				<Button
+					type='button'
+					disabled={currentPage === 1}
+					onClick={() => setCurrentPage((prev) => prev - 1)}
+					className='w-26'
+				>
+					Previous
+				</Button>
+
+				<span className='text-lg font-semibold'>
+					Page {currentPage} of {totalPages}
+				</span>
+
+				<Button
+					type='button'
+					disabled={currentPage === totalPages}
+					onClick={() => setCurrentPage((prev) => prev + 1)}
+					className='w-26'
+				>
+					Next
+				</Button>
 			</div>
 		</ProtectedRoute>
 	);
