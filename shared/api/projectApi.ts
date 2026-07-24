@@ -72,11 +72,24 @@ export const projectApi = {
 	},
 
 	update: async (id: string, data: CreateProjectData) => {
+		const formData = new FormData();
+
+		formData.append('title', data.title);
+		formData.append('description', data.description);
+
+		if (data.image) {
+			formData.append('image', data.image);
+		}
+
 		const response = await axiosInstance.put<{
 			success: boolean;
 			message: string;
 			project: Project;
-		}>(`/projects/${id}`, data);
+		}>(`/projects/${id}`, formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
 
 		return response.data;
 	},
