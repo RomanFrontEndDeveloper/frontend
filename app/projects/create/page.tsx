@@ -10,6 +10,7 @@ import {
 	createProjectSchema,
 	CreateProjectFormData,
 } from '@/shared/validation/project';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function CreateProjectPage() {
 	const {
@@ -21,23 +22,27 @@ export default function CreateProjectPage() {
 	});
 
 	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	const [image, setImage] = useState<File | null>(null);
 
-	const onSubmit = async (data: CreateProjectFormData) => {
-		const projectData = {
-			...data,
-			image,
-		};
+	const createProjectMutation = useMutation({
+		mutationFn: projectApi.create,
 
-		try {
-			await projectApi.create(projectData);
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: ['projects'],
+			});
 
 			router.push('/projects');
-		} catch (error) {
-			console.error(error);
-			alert('Failed to create project');
-		}
+		},
+	});
+
+	const onSubmit = (data: CreateProjectFormData) => {
+		createProjectMutation.mutate({
+			...data,
+			image,
+		});
 	};
 
 	return (
@@ -107,8 +112,14 @@ export default function CreateProjectPage() {
 					/>
 				</div>
 
-				<Button className='w-full' type='submit'>
-					Create Project
+				<Button
+					className='w-full'
+					type='submit'
+					disabled={createProjectMutation.isPending}
+				>
+					{createProjectMutation.isPending
+						? 'Creating...'
+						: 'Create Project'}
 				</Button>
 			</form>
 		</Card>

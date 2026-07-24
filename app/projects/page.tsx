@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Card, Button, Input } from '@/shared/ui';
 import { projectApi } from '@/shared/api/projectApi';
@@ -9,16 +9,16 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-type Project = {
-	_id: string;
-	title: string;
-	description: string;
-	owner: string;
-	createdAt: string;
-	updatedAt: string;
-	imageUrl?: string;
-	imagePublicId?: string;
-};
+// type Project = {
+// 	_id: string;
+// 	title: string;
+// 	description: string;
+// 	owner: string;
+// 	createdAt: string;
+// 	updatedAt: string;
+// 	imageUrl?: string;
+// 	imagePublicId?: string;
+// };
 
 export default function ProjectsPage() {
 	const [search, setSearch] = useState('');
@@ -30,6 +30,16 @@ export default function ProjectsPage() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
+	const deleteProjectMutation = useMutation({
+		mutationFn: (id: string) => projectApi.delete(id),
+
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ['projects'],
+			});
+		},
+	});
+
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setDebouncedSearch(search);
@@ -37,10 +47,6 @@ export default function ProjectsPage() {
 
 		return () => clearTimeout(timer);
 	}, [search]);
-
-	useEffect(() => {
-		setCurrentPage(1);
-	}, [debouncedSearch]);
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['projects', debouncedSearch, currentPage],
@@ -50,7 +56,7 @@ export default function ProjectsPage() {
 	const projects = data?.projects ?? [];
 	const totalPages = data?.totalPages ?? 1;
 
-	const handleDelete = async (id: string) => {
+	const handleDelete = (id: string) => {
 		const confirmed = window.confirm(
 			'Are you sure you want to delete this project?',
 		);
@@ -59,15 +65,7 @@ export default function ProjectsPage() {
 			return;
 		}
 
-		try {
-			await projectApi.delete(id);
-
-			await queryClient.invalidateQueries({
-				queryKey: ['projects'],
-			});
-		} catch (error) {
-			console.error(error);
-		}
+		deleteProjectMutation.mutate(id);
 	};
 
 	if (isLoading) {
@@ -97,7 +95,10 @@ export default function ProjectsPage() {
 							type='text'
 							placeholder='Search projects...'
 							value={search}
-							onChange={(e) => setSearch(e.target.value)}
+							onChange={(e) => {
+								setSearch(e.target.value);
+								setCurrentPage(1);
+							}}
 							className='max-w-xl'
 						/>
 
