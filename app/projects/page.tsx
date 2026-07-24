@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Card, Button, Input } from '@/shared/ui';
 import { projectApi } from '@/shared/api/projectApi';
@@ -20,14 +21,14 @@ type Project = {
 };
 
 export default function ProjectsPage() {
-	const [projects, setProjects] = useState<Project[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [searchLoading, setSearchLoading] = useState(false);
 	const [search, setSearch] = useState('');
 	const [debouncedSearch, setDebouncedSearch] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(1);
+
 	const limit = 3;
+
+	const router = useRouter();
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -41,32 +42,13 @@ export default function ProjectsPage() {
 		setCurrentPage(1);
 	}, [debouncedSearch]);
 
-	const router = useRouter();
+	const { data, isLoading, error } = useQuery({
+		queryKey: ['projects', debouncedSearch, currentPage],
+		queryFn: () => projectApi.getAll(debouncedSearch, currentPage, limit),
+	});
 
-	useEffect(() => {
-		const loadProjects = async () => {
-			try {
-				setSearchLoading(true);
-
-				const data = await projectApi.getAll(
-					debouncedSearch,
-					currentPage,
-					limit,
-				);
-
-				setProjects(data.projects);
-				setCurrentPage(data.currentPage);
-				setTotalPages(data.totalPages);
-			} catch (error) {
-				console.error(error);
-			} finally {
-				setLoading(false);
-				setSearchLoading(false);
-			}
-		};
-
-		loadProjects();
-	}, [debouncedSearch, currentPage]);
+	const projects = data?.projects ?? [];
+	const totalPages = data?.totalPages ?? 1;
 
 	const handleDelete = async (id: string) => {
 		const confirmed = window.confirm(
@@ -80,16 +62,26 @@ export default function ProjectsPage() {
 		try {
 			await projectApi.delete(id);
 
-			setProjects((prev) => prev.filter((project) => project._id !== id));
+			await queryClient.invalidateQueries({
+				queryKey: ['projects'],
+			});
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
-	if (loading) {
+	if (isLoading) {
 		return (
 			<ProtectedRoute>
 				<p>Loading...</p>
+			</ProtectedRoute>
+		);
+	}
+
+	if (error) {
+		return (
+			<ProtectedRoute>
+				<p>Something went wrong.</p>
 			</ProtectedRoute>
 		);
 	}
@@ -109,8 +101,8 @@ export default function ProjectsPage() {
 							className='max-w-xl'
 						/>
 
-						<div className='flex h-16 items-center justify-center mt-2'>
-							{searchLoading && (
+						<div className='mt-2 flex h-16 items-center justify-center'>
+							{isLoading && (
 								<div className='h-12 w-12 animate-spin rounded-full border-4 border-gray-600 border-t-blue-600' />
 							)}
 						</div>
@@ -139,6 +131,7 @@ export default function ProjectsPage() {
 									alt={project.title}
 									width={600}
 									height={300}
+									loading='eager'
 									className='mb-4 h-48 w-full rounded-lg object-cover'
 								/>
 							)}
@@ -167,7 +160,8 @@ export default function ProjectsPage() {
 					))
 				)}
 			</div>
-			<div className='mt-8 flex items-center justify-center gap-4 my-8'>
+
+			<div className='my-8 flex items-center justify-center gap-4'>
 				<Button
 					type='button'
 					disabled={currentPage === 1}
