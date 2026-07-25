@@ -7,6 +7,7 @@ import { projectApi } from '@/shared/api/projectApi';
 import { Card, Button, Container } from '@/shared/ui';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { useRouter } from 'next/navigation';
+import { useDashboardStats } from '@/shared/hooks/useDashboardStats';
 
 export default function DashboardPage() {
 	const router = useRouter();
@@ -30,6 +31,8 @@ export default function DashboardPage() {
 		queryFn: () => projectApi.getAll(),
 	});
 
+	const { data, isLoading } = useDashboardStats();
+
 	const deleteProjectMutation = useMutation({
 		mutationFn: (id: string) => projectApi.delete(id),
 
@@ -45,13 +48,7 @@ export default function DashboardPage() {
 		},
 	});
 
-	const latestProject = projectsData?.projects[0];
-
-	const lastUpdate = latestProject
-		? new Date(latestProject.updatedAt).toLocaleDateString()
-		: '-';
-
-	if (profileLoading || projectsLoading) {
+	if (profileLoading || projectsLoading || isLoading) {
 		return (
 			<ProtectedRoute>
 				<div className='flex min-h-[calc(100vh-64px)] items-center justify-center'>
@@ -109,7 +106,7 @@ export default function DashboardPage() {
 						<h2 className='mb-2 text-xl font-semibold'>Projects</h2>
 
 						<p className='text-4xl font-bold'>
-							{projectsData?.totalProjects}
+							{data?.stats.projectsCount ?? 0}
 						</p>
 					</Card>
 
@@ -119,7 +116,7 @@ export default function DashboardPage() {
 						</h2>
 
 						<p className='truncate'>
-							{latestProject?.title ?? '-'}
+							{data?.stats.lastProject ?? 'No projects'}
 						</p>
 					</Card>
 
@@ -128,7 +125,13 @@ export default function DashboardPage() {
 							Last Update
 						</h2>
 
-						<p>{lastUpdate}</p>
+						<p>
+							{data?.stats.lastUpdate
+								? new Date(
+										data.stats.lastUpdate,
+									).toLocaleDateString()
+								: '-'}
+						</p>
 					</Card>
 				</div>
 
