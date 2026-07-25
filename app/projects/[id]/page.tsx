@@ -3,7 +3,11 @@
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-
+import {
+	useFavorites,
+	useAddFavorite,
+	useRemoveFavorite,
+} from '@/shared/hooks/useFavorites';
 import { projectApi } from '@/shared/api/projectApi';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Button, Card, Container } from '@/shared/ui';
@@ -16,6 +20,11 @@ export default function ProjectPage() {
 		queryKey: ['project', params.id],
 		queryFn: () => projectApi.getById(params.id as string),
 	});
+
+	const { data: favoritesData } = useFavorites();
+
+	const addFavorite = useAddFavorite();
+	const removeFavorite = useRemoveFavorite();
 
 	if (isLoading) {
 		return (
@@ -38,6 +47,18 @@ export default function ProjectPage() {
 	}
 
 	const project = data.project;
+
+	const isFavorite = favoritesData?.favorites?.some(
+		(favorite: any) => favorite.project._id === project._id,
+	);
+
+	const handleFavorite = () => {
+		if (isFavorite) {
+			removeFavorite.mutate(project._id);
+		} else {
+			addFavorite.mutate(project._id);
+		}
+	};
 
 	return (
 		<ProtectedRoute>
@@ -100,6 +121,15 @@ export default function ProjectPage() {
 								onClick={() => router.back()}
 							>
 								Back
+							</Button>
+							<Button
+								variant='secondary'
+								className='min-w-44'
+								onClick={handleFavorite}
+							>
+								{isFavorite
+									? '💖 Remove Favorite'
+									: '🤍 Add Favorite'}
 							</Button>
 						</div>
 					</Card>
