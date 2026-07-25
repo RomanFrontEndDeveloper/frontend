@@ -19,7 +19,11 @@ export const ProtectedRoute = ({ children }: Props) => {
 	}, [loading, user, router]);
 
 	if (loading) {
-		return <p>Loading...</p>;
+		return (
+			<div className='flex min-h-screen items-center justify-center'>
+				<p className='text-6xl font-bold'>Loading...</p>
+			</div>
+		);
 	}
 
 	if (!user) {
