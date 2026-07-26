@@ -9,11 +9,11 @@ export const Navigation = () => {
 	const { user, logout } = useAuth();
 
 	const links = [
-		{ href: '/', label: 'Home' },
+		// { href: '/', label: 'Home' },
 		{ href: '/dashboard', label: 'Dashboard' },
 		{ href: '/projects', label: 'Projects' },
 		{ href: '/profile', label: 'Profile' },
-		{ href: '/about', label: 'About' },
+		// { href: '/about', label: 'About' },
 	];
 
 	return (

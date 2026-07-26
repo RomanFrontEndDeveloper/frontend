@@ -1,5 +1,5 @@
 import { axiosInstance } from './axios';
-import type { LoginFormData } from '@/shared/validation/auth';
+import type { LoginFormData, RegisterFormData } from '@/shared/validation/auth';
 
 type User = {
 	id: string;
@@ -10,6 +10,11 @@ type LoginResponse = {
 	success: boolean;
 	token: string;
 	user: User;
+	message: string;
+};
+
+export type RegisterResponse = {
+	success: boolean;
 	message: string;
 };
 
@@ -33,6 +38,12 @@ export const authApi = {
 		);
 
 		return response.data;
+	},
+
+	register(data: RegisterFormData): Promise<RegisterResponse> {
+		return axiosInstance
+			.post('/auth/register', data)
+			.then((res) => res.data);
 	},
 
 	getProfile: async (): Promise<ProfileResponse> => {

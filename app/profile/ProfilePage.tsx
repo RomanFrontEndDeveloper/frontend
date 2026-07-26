@@ -22,7 +22,7 @@ export default function ProfilePage() {
 					<p>
 						<strong>ID:</strong>{' '}
 						<span title={user?.id}>
-							{user?.id ? `${user.id.slice(0, 8)}...` : '-'}
+							{user?.id ? `${user.id}` : '-'}
 						</span>
 					</p>
 
