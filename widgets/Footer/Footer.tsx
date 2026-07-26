@@ -1,8 +1,10 @@
 export const Footer = () => {
+	const currentYear = new Date().getFullYear();
+
 	return (
-		<footer className='h-16 border-t flex items-center justify-center'>
-			<p className='text-sm text-gray-500'>
-				© 2026 FreelanceHub. All rights reserved.
+		<footer className='flex h-16 items-center justify-center border-t border-gray-200 dark:border-gray-700 transition-colors duration-200'>
+			<p className='text-sm text-gray-500 dark:text-gray-400'>
+				© {currentYear} FreelanceHub. All rights reserved.
 			</p>
 		</footer>
 	);
