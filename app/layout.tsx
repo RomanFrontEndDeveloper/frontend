@@ -17,8 +17,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: 'FreelanceHub',
-	description: 'Freelance marketplace built with Next.js',
+	title: {
+		default: 'FreelanceHub',
+		template: '%s | FreelanceHub',
+	},
+	description:
+		'FreelanceHub is a modern freelance marketplace built with Next.js, React, TypeScript and Node.js.',
+	keywords: [
+		'freelance',
+		'marketplace',
+		'next.js',
+		'react',
+		'typescript',
+		'node.js',
+		'portfolio',
+	],
+	authors: [
+		{
+			name: 'Roman Okhremov',
+		},
+	],
+	creator: 'Roman Okhremov',
+	applicationName: 'FreelanceHub',
 };
 
 export default function RootLayout({

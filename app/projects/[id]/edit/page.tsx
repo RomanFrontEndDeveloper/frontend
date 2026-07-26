@@ -8,7 +8,7 @@ import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Button, Card, Input } from '@/shared/ui';
 
 export default function EditProjectPage() {
-	const params = useParams();
+	const params = useParams<{ id: string }>();
 	const router = useRouter();
 	const queryClient = useQueryClient();
 
@@ -39,7 +39,7 @@ export default function EditProjectPage() {
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ['project', params.id],
-		queryFn: () => projectApi.getById(params.id as string),
+		queryFn: () => projectApi.getById(params.id),
 	});
 
 	useEffect(() => {

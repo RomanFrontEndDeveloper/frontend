@@ -4,7 +4,11 @@ import { Button } from '../Button';
 import { useTheme } from '@/shared/providers/theme/ThemeContext';
 
 export const ThemeToggle = () => {
-	const { theme, toggleTheme } = useTheme();
+	const { theme, mounted, toggleTheme } = useTheme();
+
+	if (!mounted) {
+		return null;
+	}
 
 	return (
 		<Button variant='secondary' onClick={toggleTheme}>
