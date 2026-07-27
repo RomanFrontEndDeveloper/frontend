@@ -8,3 +8,6 @@ export * from './Input';
 export * from './Logo';
 export * from './Spinner';
 export * from './InputError';
+export { ErrorState } from './ErrorState';
+export * from './PageLoader';
+export * from './ThemeToggle';
