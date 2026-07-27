@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { projectApi } from '@/shared/api/projectApi';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
-import { Button, Card, Input } from '@/shared/ui';
+import { Button, Card, Input, PageLoader } from '@/shared/ui';
 
 export default function EditProjectPage() {
 	const params = useParams<{ id: string }>();
@@ -62,7 +62,7 @@ export default function EditProjectPage() {
 	if (isLoading) {
 		return (
 			<ProtectedRoute>
-				<p>Loading...</p>
+				<PageLoader />
 			</ProtectedRoute>
 		);
 	}

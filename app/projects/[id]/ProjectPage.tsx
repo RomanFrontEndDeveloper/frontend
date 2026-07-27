@@ -10,7 +10,7 @@ import {
 } from '@/shared/hooks/useFavorites';
 import { projectApi } from '@/shared/api/projectApi';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
-import { Button, Card, Container } from '@/shared/ui';
+import { Button, Card, Container, PageLoader } from '@/shared/ui';
 
 export default function ProjectPage() {
 	const params = useParams<{ id: string }>();
@@ -29,9 +29,7 @@ export default function ProjectPage() {
 	if (isLoading) {
 		return (
 			<ProtectedRoute>
-				<div className='flex min-h-[calc(100vh-64px)] items-center justify-center'>
-					<p className='text-5xl font-bold'>Loading...</p>
-				</div>
+				<PageLoader />
 			</ProtectedRoute>
 		);
 	}
@@ -48,9 +46,11 @@ export default function ProjectPage() {
 
 	const project = data.project;
 
-	const isFavorite = favoritesData?.favorites?.some(
-		(favorite: any) => favorite.project._id === project._id,
-	);
+	const isFavorite =
+		favoritesData?.favorites?.some(
+			(favorite: any) =>
+				favorite.project && favorite.project._id === project._id,
+		) ?? false;
 
 	const handleFavorite = () => {
 		if (isFavorite) {

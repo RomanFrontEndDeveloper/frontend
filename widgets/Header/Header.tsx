@@ -10,20 +10,23 @@ export const Header = () => {
 	const { user } = useAuth();
 
 	return (
-		<header className='border-b border-gray-200 dark:border-gray-700 transition-colors duration-200'>
+		<header className='border-b border-gray-200 transition-colors duration-200 dark:border-gray-700'>
 			<Container>
-				<div className='flex h-16 items-center justify-between'>
+				<div className='flex flex-col gap-4 py-4 lg:h-16 lg:flex-row lg:items-center lg:justify-between'>
 					<Logo />
 
 					{user && (
-						<span className='text-gray-700 dark:text-gray-300'>
+						<p className='text-center text-sm text-gray-700 dark:text-gray-300 lg:text-left'>
 							{user.email}
-						</span>
+						</p>
 					)}
 
-					<div className='flex items-center gap-6'>
+					<div className='flex flex-wrap items-center justify-center gap-4 lg:justify-end lg:gap-6'>
 						<Navigation />
-						<ThemeToggle />
+
+						<div>
+							<ThemeToggle />
+						</div>
 					</div>
 				</div>
 			</Container>

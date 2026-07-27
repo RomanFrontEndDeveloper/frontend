@@ -11,3 +11,6 @@ export * from './InputError';
 export { ErrorState } from './ErrorState';
 export * from './PageLoader';
 export * from './ThemeToggle';
+export { Skeleton } from './Skeleton';
+export { SkeletonCard } from './SkeletonCard';
+export { DashboardSkeleton } from './DashboardSkeleton';

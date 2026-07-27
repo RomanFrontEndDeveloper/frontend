@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useFavorites } from '@/shared/hooks/useFavorites';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Card, Container } from '@/shared/ui';
+import { PageLoader } from '@/shared/ui';
 
 export default function FavoritesPage() {
 	const { data, isLoading } = useFavorites();
@@ -12,9 +13,7 @@ export default function FavoritesPage() {
 	if (isLoading) {
 		return (
 			<ProtectedRoute>
-				<div className='flex min-h-[calc(100vh-64px)] items-center justify-center'>
-					<p className='text-5xl font-bold'>Loading...</p>
-				</div>
+				<PageLoader />
 			</ProtectedRoute>
 		);
 	}

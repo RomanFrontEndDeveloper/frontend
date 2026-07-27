@@ -3,6 +3,7 @@
 import { useAuth } from './useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { PageLoader } from '@/shared/ui';
 
 type Props = {
 	children: React.ReactNode;
@@ -19,11 +20,7 @@ export const ProtectedRoute = ({ children }: Props) => {
 	}, [loading, user, router]);
 
 	if (loading) {
-		return (
-			<div className='flex min-h-screen items-center justify-center'>
-				<p className='text-6xl font-bold'>Loading...</p>
-			</div>
-		);
+		return <PageLoader />;
 	}
 
 	if (!user) {

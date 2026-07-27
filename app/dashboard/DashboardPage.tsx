@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '@/shared/api';
 import { projectApi } from '@/shared/api/projectApi';
-import { Card, Button, Container } from '@/shared/ui';
+import { Button, Card, Container, DashboardSkeleton } from '@/shared/ui';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/shared/hooks/useDashboardStats';
@@ -51,9 +51,7 @@ export default function DashboardPage() {
 	if (profileLoading || projectsLoading || isLoading) {
 		return (
 			<ProtectedRoute>
-				<div className='flex min-h-[calc(100vh-64px)] items-center justify-center'>
-					<p className='text-5xl font-bold'>Loading...</p>
-				</div>
+				<DashboardSkeleton />
 			</ProtectedRoute>
 		);
 	}
@@ -71,7 +69,7 @@ export default function DashboardPage() {
 	return (
 		<ProtectedRoute>
 			<Container>
-				<div className='mt-8 mx-auto max-w-6xl'>
+				<div className='mb-10 mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3'>
 					<h2 className='mb-4 text-2xl font-bold'>Quick Actions</h2>
 
 					<div className='flex flex-wrap gap-4'>
