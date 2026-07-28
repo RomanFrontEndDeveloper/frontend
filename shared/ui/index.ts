@@ -14,3 +14,4 @@ export * from './ThemeToggle';
 export { Skeleton } from './Skeleton';
 export { SkeletonCard } from './SkeletonCard';
 export { DashboardSkeleton } from './DashboardSkeleton';
+export { Modal } from './Modal';

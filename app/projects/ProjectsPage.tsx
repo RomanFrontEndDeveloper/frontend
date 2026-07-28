@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
-import { Card, Button, Input } from '@/shared/ui';
+import { Card, Button, Input, Modal } from '@/shared/ui';
 import { projectApi } from '@/shared/api/projectApi';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,8 @@ export default function ProjectsPage() {
 	const [search, setSearch] = useState('');
 	const [debouncedSearch, setDebouncedSearch] = useState('');
 	const [currentPage, setCurrentPage] = useState(1);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
 	const limit = 3;
 
@@ -66,15 +68,24 @@ export default function ProjectsPage() {
 	const totalPages = data?.totalPages ?? 1;
 
 	const handleDelete = (id: string) => {
-		const confirmed = window.confirm(
-			'Are you sure you want to delete this project?',
-		);
+		setProjectToDelete(id);
+		setIsModalOpen(true);
+	};
 
-		if (!confirmed) {
+	const confirmDelete = () => {
+		if (!projectToDelete) {
 			return;
 		}
 
-		deleteProjectMutation.mutate(id);
+		deleteProjectMutation.mutate(projectToDelete);
+
+		setProjectToDelete(null);
+		setIsModalOpen(false);
+	};
+
+	const closeModal = () => {
+		setProjectToDelete(null);
+		setIsModalOpen(false);
 	};
 
 	if (isLoading && !data) {
@@ -247,6 +258,14 @@ export default function ProjectsPage() {
 					Next
 				</Button>
 			</div>
+			<Modal
+				isOpen={isModalOpen}
+				title='Delete Project'
+				onClose={closeModal}
+				onConfirm={confirmDelete}
+			>
+				<p>Are you sure you want to delete this project?</p>
+			</Modal>
 		</ProtectedRoute>
 	);
 }

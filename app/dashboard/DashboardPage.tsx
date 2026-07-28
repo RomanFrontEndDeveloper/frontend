@@ -1,17 +1,21 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '@/shared/api';
 import { projectApi } from '@/shared/api/projectApi';
-import { Button, Card, Container, DashboardSkeleton } from '@/shared/ui';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/shared/hooks/useDashboardStats';
+import { Button, Card, Container, DashboardSkeleton, Modal } from '@/shared/ui';
 
 export default function DashboardPage() {
 	const router = useRouter();
 	const queryClient = useQueryClient();
+
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
 	const {
 		data: profileData,
@@ -44,9 +48,36 @@ export default function DashboardPage() {
 				queryClient.invalidateQueries({
 					queryKey: ['projects-dashboard'],
 				}),
+				queryClient.invalidateQueries({
+					queryKey: ['favorites'],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ['dashboard-stats'],
+				}),
 			]);
 		},
 	});
+
+	const handleDelete = (id: string) => {
+		setProjectToDelete(id);
+		setIsModalOpen(true);
+	};
+
+	const confirmDelete = () => {
+		if (!projectToDelete) {
+			return;
+		}
+
+		deleteProjectMutation.mutate(projectToDelete);
+
+		setProjectToDelete(null);
+		setIsModalOpen(false);
+	};
+
+	const closeModal = () => {
+		setProjectToDelete(null);
+		setIsModalOpen(false);
+	};
 
 	if (profileLoading || projectsLoading || isLoading) {
 		return (
@@ -208,20 +239,9 @@ export default function DashboardPage() {
 												disabled={
 													deleteProjectMutation.isPending
 												}
-												onClick={() => {
-													const confirmed =
-														window.confirm(
-															'Delete this project?',
-														);
-
-													if (!confirmed) {
-														return;
-													}
-
-													deleteProjectMutation.mutate(
-														project._id,
-													);
-												}}
+												onClick={() =>
+													handleDelete(project._id)
+												}
 											>
 												{deleteProjectMutation.isPending
 													? 'Deleting...'
@@ -234,6 +254,14 @@ export default function DashboardPage() {
 						</div>
 					)}
 				</div>
+				<Modal
+					isOpen={isModalOpen}
+					title='Delete Project'
+					onClose={closeModal}
+					onConfirm={confirmDelete}
+				>
+					<p>Are you sure you want to delete this project?</p>
+				</Modal>
 			</Container>
 		</ProtectedRoute>
 	);
