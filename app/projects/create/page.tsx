@@ -126,16 +126,24 @@ export default function CreateProjectPage() {
 						}}
 					/>
 				</div>
-
-				<Button
-					className='w-full'
-					type='submit'
-					disabled={createProjectMutation.isPending}
-				>
-					{createProjectMutation.isPending
-						? 'Creating...'
-						: 'Create Project'}
-				</Button>
+				<div className='mt-8 flex gap-4'>
+					<Button
+						variant='secondary'
+						className='min-w-32'
+						onClick={() => router.back()}
+					>
+						Back
+					</Button>
+					<Button
+						className='w-full'
+						type='submit'
+						disabled={createProjectMutation.isPending}
+					>
+						{createProjectMutation.isPending
+							? 'Creating...'
+							: 'Create Project'}
+					</Button>
+				</div>
 			</form>
 		</Card>
 	);

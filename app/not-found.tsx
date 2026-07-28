@@ -12,7 +12,7 @@ export default function NotFound() {
 			</h2>
 
 			<p className='max-w-lg text-center text-gray-500 dark:text-gray-400'>
-				The page you are looking for doesn't exist or has been moved.
+				The page you are looking for does not exist or has been moved.
 			</p>
 
 			<Link href='/dashboard'>

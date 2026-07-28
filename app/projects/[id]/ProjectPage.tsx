@@ -12,6 +12,16 @@ import { projectApi } from '@/shared/api/projectApi';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Button, Card, Container, PageLoader } from '@/shared/ui';
 
+interface Favorite {
+	_id: string;
+	project: {
+		_id: string;
+		title: string;
+		description: string;
+		imageUrl?: string;
+	} | null;
+}
+
 export default function ProjectPage() {
 	const params = useParams<{ id: string }>();
 	const router = useRouter();
@@ -48,7 +58,7 @@ export default function ProjectPage() {
 
 	const isFavorite =
 		favoritesData?.favorites?.some(
-			(favorite: any) =>
+			(favorite: Favorite) =>
 				favorite.project && favorite.project._id === project._id,
 		) ?? false;
 

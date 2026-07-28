@@ -62,7 +62,9 @@ export default function EditProjectPage() {
 	useEffect(() => {
 		if (!data) return;
 
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		setTitle(data.project.title);
+
 		setDescription(data.project.description);
 	}, [data]);
 
@@ -152,16 +154,24 @@ export default function EditProjectPage() {
 								}}
 							/>
 						</div>
-
-						<Button
-							type='submit'
-							className='w-full'
-							disabled={updateProjectMutation.isPending}
-						>
-							{updateProjectMutation.isPending
-								? 'Saving...'
-								: 'Save changes'}
-						</Button>
+						<div className='mt-8 flex gap-4'>
+							<Button
+								variant='secondary'
+								className='min-w-32'
+								onClick={() => router.back()}
+							>
+								Back
+							</Button>
+							<Button
+								type='submit'
+								className='w-full'
+								disabled={updateProjectMutation.isPending}
+							>
+								{updateProjectMutation.isPending
+									? 'Saving...'
+									: 'Save changes'}
+							</Button>
+						</div>
 					</form>
 				</Card>
 			</div>

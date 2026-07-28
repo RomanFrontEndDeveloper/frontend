@@ -1,15 +1,17 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@/shared/providers/auth/useAuth';
+import { useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+
 import { authApi } from '@/shared/api';
+import { useAuth } from '@/shared/providers/auth/useAuth';
 import { loginSchema, type LoginFormData } from '@/shared/validation/auth';
 import { Button, Card, Divider, Input, InputError } from '@/shared/ui';
-import Link from 'next/link';
-import { useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -45,12 +47,16 @@ export default function LoginPage() {
 			toast.success('Login successful!');
 
 			router.push('/dashboard');
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error(error);
 
-			toast.error(
-				error?.response?.data?.message ?? 'Invalid email or password.',
-			);
+			if (axios.isAxiosError(error)) {
+				toast.error(
+					error.response?.data?.message ?? 'Something went wrong',
+				);
+			} else {
+				toast.error('Something went wrong');
+			}
 		}
 	};
 
@@ -96,8 +102,9 @@ export default function LoginPage() {
 						{isSubmitting ? 'Signing In...' : 'Sign In'}
 					</Button>
 				</form>
+
 				<p className='mt-6 text-center text-sm text-gray-500'>
-					Don't have an account?{' '}
+					Do not have an account?{' '}
 					<Link
 						href='/register'
 						className='font-medium text-blue-600 hover:underline'

@@ -8,8 +8,16 @@ import { projectApi } from '@/shared/api/projectApi';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/shared/hooks/useDashboardStats';
-import { Button, Card, Container, DashboardSkeleton, Modal } from '@/shared/ui';
+import {
+	Button,
+	Card,
+	Container,
+	DashboardSkeleton,
+	Modal,
+	AnimatedCard,
+} from '@/shared/ui';
 import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 
 export default function DashboardPage() {
 	const router = useRouter();
@@ -118,61 +126,71 @@ export default function DashboardPage() {
 						>
 							Create Project
 						</Button>
-
-						{/* <Button
-							variant='secondary'
-							onClick={() => router.push('/projects')}
-						>
-							View Projects
-						</Button>
-
-						<Button
-							variant='secondary'
-							onClick={() => router.push('/profile')}
-						>
-							Profile
-						</Button> */}
 					</div>
 				</div>
 
-				<div className='grid gap-6 md:grid-cols-2 xl:grid-cols-4 mt-10'>
-					<Card>
-						<h2 className='mb-2 text-xl font-semibold'>User</h2>
-
-						<p>{profileData?.user.email}</p>
-					</Card>
-
-					<Card>
-						<h2 className='mb-2 text-xl font-semibold'>Projects</h2>
-
-						<p className='text-4xl font-bold'>
-							{data?.stats.projectsCount ?? 0}
-						</p>
-					</Card>
-
-					<Card>
-						<h2 className='mb-2 text-xl font-semibold'>
-							Last Project
-						</h2>
-
-						<p className='truncate'>
-							{data?.stats.lastProject ?? 'No projects'}
-						</p>
-					</Card>
-
-					<Card>
-						<h2 className='mb-2 text-xl font-semibold'>
-							Last Update
-						</h2>
-
-						<p>
-							{data?.stats.lastUpdate
+				<div className='grid gap-6 mt-10 md:grid-cols-2 xl:grid-cols-4'>
+					{[
+						{
+							title: 'User',
+							value: profileData?.user.email,
+						},
+						{
+							title: 'Projects',
+							value: data?.stats.projectsCount ?? 0,
+						},
+						{
+							title: 'Last Project',
+							value: data?.stats.lastProject ?? 'No projects',
+						},
+						{
+							title: 'Last Update',
+							value: data?.stats.lastUpdate
 								? new Date(
 										data.stats.lastUpdate,
 									).toLocaleDateString()
-								: '-'}
-						</p>
-					</Card>
+								: '-',
+						},
+					].map((item, index) => (
+						<motion.div
+							key={item.title}
+							initial={{
+								opacity: 0,
+								scale: 0.92,
+							}}
+							animate={{
+								opacity: 1,
+								scale: 1,
+							}}
+							transition={{
+								duration: 0.35,
+								delay: index * 0.08,
+								ease: 'easeOut',
+							}}
+							whileHover={{
+								scale: 1.03,
+								boxShadow: '0 12px 30px rgba(0,0,0,0.2)',
+							}}
+						>
+							<Card className='flex min-h-34 flex-col'>
+								<h2 className='mb-2 text-xl font-semibold'>
+									{item.title}
+								</h2>
+
+								<p
+									className={
+										item.title === 'Projects'
+											? 'text-4xl font-bold'
+											: item.title === 'Last Project'
+												? 'truncate'
+												: ''
+									}
+								>
+									{item.value}
+								</p>
+							</Card>
+						</motion.div>
+					))}
 				</div>
 
 				<div className='mt-10'>
@@ -183,80 +201,87 @@ export default function DashboardPage() {
 					{projectsData?.projects.length === 0 ? (
 						<Card className='py-10 text-center'>
 							<p className='text-lg text-gray-500'>
-								You don't have any projects yet.
+								You don&apos;t have any projects yet.
 							</p>
 						</Card>
 					) : (
 						<div className='mb-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3'>
-							{projectsData?.projects.map((project) => (
-								<Card
+							{projectsData?.projects.map((project, index) => (
+								<AnimatedCard
 									key={project._id}
-									className='rounded-xl border border-gray-200 p-5 transition-shadow duration-300 hover:shadow-xl'
+									delay={index * 0.08}
 								>
-									<div className='flex h-full flex-col'>
-										{project.imageUrl && (
-											<Image
-												src={project.imageUrl}
-												alt={project.title}
-												width={400}
-												height={160}
-												className='mb-4 h-40 w-full rounded-lg object-cover'
-											/>
-										)}
+									<Card
+										key={project._id}
+										className='rounded-xl border border-gray-200 p-5 transition-shadow duration-300'
+									>
+										<div className='flex h-full flex-col'>
+											{project.imageUrl && (
+												<Image
+													src={project.imageUrl}
+													alt={project.title}
+													width={400}
+													height={160}
+													className='mb-4 h-40 w-full rounded-lg object-cover'
+												/>
+											)}
 
-										<h3 className='text-2xl font-bold'>
-											{project.title}
-										</h3>
+											<h3 className='text-2xl font-bold'>
+												{project.title}
+											</h3>
 
-										<p className='mt-3 line-clamp-3 flex-1 text-gray-600'>
-											{project.description}
-										</p>
+											<p className='mt-3 line-clamp-3 flex-1 text-gray-600'>
+												{project.description}
+											</p>
 
-										<p className='mt-4 text-sm text-gray-500'>
-											Created:{' '}
-											{new Date(
-												project.createdAt,
-											).toLocaleDateString()}
-										</p>
+											<p className='mt-4 text-sm text-gray-500'>
+												Created:{' '}
+												{new Date(
+													project.createdAt,
+												).toLocaleDateString()}
+											</p>
 
-										<div className='mt-6 grid grid-cols-3 gap-3'>
-											<Button
-												variant='secondary'
-												onClick={() =>
-													router.push(
-														`/projects/${project._id}`,
-													)
-												}
-											>
-												View
-											</Button>
-											<Button
-												className='flex-1'
-												onClick={() =>
-													router.push(
-														`/projects/${project._id}/edit`,
-													)
-												}
-											>
-												Edit
-											</Button>
+											<div className='mt-6 grid grid-cols-3 gap-3'>
+												<Button
+													variant='secondary'
+													onClick={() =>
+														router.push(
+															`/projects/${project._id}`,
+														)
+													}
+												>
+													View
+												</Button>
+												<Button
+													className='flex-1'
+													onClick={() =>
+														router.push(
+															`/projects/${project._id}/edit`,
+														)
+													}
+												>
+													Edit
+												</Button>
 
-											<Button
-												className='flex-1 bg-red-600 hover:bg-red-700'
-												disabled={
-													deleteProjectMutation.isPending
-												}
-												onClick={() =>
-													handleDelete(project._id)
-												}
-											>
-												{deleteProjectMutation.isPending
-													? 'Deleting...'
-													: 'Delete'}
-											</Button>
+												<Button
+													className='flex-1 bg-red-600 hover:bg-red-700'
+													disabled={
+														deleteProjectMutation.isPending
+													}
+													onClick={() =>
+														handleDelete(
+															project._id,
+														)
+													}
+												>
+													{deleteProjectMutation.isPending
+														? 'Deleting...'
+														: 'Delete'}
+												</Button>
+											</div>
 										</div>
-									</div>
-								</Card>
+									</Card>
+								</AnimatedCard>
 							))}
 						</div>
 					)}

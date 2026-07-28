@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { authApi } from '@/shared/api';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 import {
 	registerSchema,
@@ -27,17 +28,21 @@ export default function RegisterPage() {
 			router.push('/login');
 		},
 
-		onError: (error: any) => {
-			toast.error(
-				error?.response?.data?.message ?? 'Failed to create account.',
-			);
+		onError: (error: unknown) => {
+			if (axios.isAxiosError(error)) {
+				toast.error(
+					error.response?.data?.message ??
+						'Failed to create account.',
+				);
+			} else {
+				toast.error('Failed to create account.');
+			}
 		},
 	});
-
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors },
 	} = useForm<RegisterFormData>({
 		resolver: zodResolver(registerSchema),
 	});
