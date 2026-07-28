@@ -9,6 +9,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Skeleton, SkeletonCard } from '@/shared/ui';
+import {
+	useFavorites,
+	useAddFavorite,
+	useRemoveFavorite,
+} from '@/shared/hooks/useFavorites';
 
 export default function ProjectsPage() {
 	const [search, setSearch] = useState('');
@@ -19,6 +24,19 @@ export default function ProjectsPage() {
 
 	const router = useRouter();
 	const queryClient = useQueryClient();
+	const { data: favoritesData } = useFavorites();
+
+	const addFavorite = useAddFavorite();
+
+	const removeFavorite = useRemoveFavorite();
+
+	const handleFavorite = (projectId: string, isFavorite: boolean) => {
+		if (isFavorite) {
+			removeFavorite.mutate(projectId);
+		} else {
+			addFavorite.mutate(projectId);
+		}
+	};
 
 	const deleteProjectMutation = useMutation({
 		mutationFn: (id: string) => projectApi.delete(id),
@@ -108,7 +126,7 @@ export default function ProjectsPage() {
 
 					<Button
 						onClick={() => router.push('/projects/create')}
-						className='w-1/2 md:w-auto'
+						className='w-3xs'
 					>
 						Create Project
 					</Button>
@@ -122,49 +140,86 @@ export default function ProjectsPage() {
 					</div>
 				) : (
 					<div className='grid auto-rows-fr grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'>
-						{projects.map((project) => (
-							<Card
-								key={project._id}
-								className='flex h-full flex-col rounded-xl border border-border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl'
-							>
-								<h2 className='text-2xl font-bold break-words'>
-									{project.title}
-								</h2>
+						{projects.map((project) => {
+							const isFavorite =
+								favoritesData?.favorites?.some(
+									(favorite: any) =>
+										favorite.project?._id === project._id,
+								) ?? false;
 
-								{project.imageUrl && (
-									<Image
-										src={project.imageUrl}
-										alt={project.title}
-										width={600}
-										height={300}
-										className='my-4 h-56 w-full rounded-xl object-cover'
-									/>
-								)}
+							return (
+								<Card
+									key={project._id}
+									className='flex h-full flex-col rounded-xl border border-border p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl'
+								>
+									<h2 className='break-words text-2xl font-bold'>
+										{project.title}
+									</h2>
 
-								<p className='flex-1 text-muted-foreground line-clamp-3'>
-									{project.description}
-								</p>
+									{project.imageUrl && (
+										<Image
+											src={project.imageUrl}
+											alt={project.title}
+											width={600}
+											height={300}
+											className='my-4 h-56 w-full rounded-xl object-cover'
+										/>
+									)}
 
-								<div className='mt-4 flex gap-3'>
-									<Link
-										href={`/projects/${project._id}/edit`}
-										className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
-									>
-										Edit
-									</Link>
+									<p className='flex-1 line-clamp-3 text-muted-foreground'>
+										{project.description}
+									</p>
 
-									<Button
-										type='button'
-										onClick={() =>
-											handleDelete(project._id)
-										}
-										className='bg-red-600 hover:bg-red-700'
-									>
-										Delete
-									</Button>
-								</div>
-							</Card>
-						))}
+									<div className='mt-6 space-y-3'>
+										<div className='grid grid-cols-3 gap-3'>
+											<Link
+												href={`/projects/${project._id}/edit`}
+												className='flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700'
+											>
+												Edit
+											</Link>
+
+											<Button
+												variant='secondary'
+												className='w-full'
+												onClick={() =>
+													router.push(
+														`/projects/${project._id}`,
+													)
+												}
+											>
+												View
+											</Button>
+
+											<Button
+												type='button'
+												className='w-full bg-red-600 hover:bg-red-700'
+												onClick={() =>
+													handleDelete(project._id)
+												}
+											>
+												Delete
+											</Button>
+										</div>
+
+										<Button
+											variant='secondary'
+											className='w-full'
+											onClick={() =>
+												handleFavorite(
+													project._id,
+													isFavorite,
+												)
+											}
+										>
+											{isFavorite
+												? '💖 Remove Favorite'
+												: '🤍 Add Favorite'}
+										</Button>
+									</div>
+								</Card>
+							);
+						})}
 					</div>
 				)}
 			</div>

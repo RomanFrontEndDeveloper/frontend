@@ -70,14 +70,18 @@ export default function DashboardPage() {
 		<ProtectedRoute>
 			<Container>
 				<div className='mb-10 mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 2xl:grid-cols-3'>
-					<h2 className='mb-4 text-2xl font-bold'>Quick Actions</h2>
-
-					<div className='flex flex-wrap gap-4'>
-						<Button onClick={() => router.push('/projects/create')}>
+					<div className='flex flex-col gap-4'>
+						<h2 className='mb-4 text-2xl font-bold'>
+							Quick Actions
+						</h2>
+						<Button
+							className='w-3xs'
+							onClick={() => router.push('/projects/create')}
+						>
 							Create Project
 						</Button>
 
-						<Button
+						{/* <Button
 							variant='secondary'
 							onClick={() => router.push('/projects')}
 						>
@@ -89,7 +93,7 @@ export default function DashboardPage() {
 							onClick={() => router.push('/profile')}
 						>
 							Profile
-						</Button>
+						</Button> */}
 					</div>
 				</div>
 
