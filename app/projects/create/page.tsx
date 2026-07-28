@@ -11,6 +11,7 @@ import {
 	CreateProjectFormData,
 } from '@/shared/validation/project';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 export default function CreateProjectPage() {
 	const {
@@ -30,11 +31,25 @@ export default function CreateProjectPage() {
 		mutationFn: projectApi.create,
 
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['projects'],
-			});
+			await Promise.all([
+				queryClient.invalidateQueries({
+					queryKey: ['projects'],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ['projects-dashboard'],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ['dashboard-stats'],
+				}),
+			]);
+
+			toast.success('Project created successfully!');
 
 			router.push('/projects');
+		},
+
+		onError: () => {
+			toast.error('Failed to create project.');
 		},
 	});
 

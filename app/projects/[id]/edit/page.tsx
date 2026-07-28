@@ -6,6 +6,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { projectApi } from '@/shared/api/projectApi';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Button, Card, Input, PageLoader } from '@/shared/ui';
+import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 export default function EditProjectPage() {
 	const params = useParams<{ id: string }>();
@@ -31,9 +33,24 @@ export default function EditProjectPage() {
 				queryClient.invalidateQueries({
 					queryKey: ['project', params.id],
 				}),
+				queryClient.invalidateQueries({
+					queryKey: ['projects-dashboard'],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ['dashboard-stats'],
+				}),
+				queryClient.invalidateQueries({
+					queryKey: ['favorites'],
+				}),
 			]);
 
+			toast.success('Project updated successfully!');
+
 			router.push('/projects');
+		},
+
+		onError: () => {
+			toast.error('Failed to update project.');
 		},
 	});
 
@@ -83,9 +100,11 @@ export default function EditProjectPage() {
 
 					{data?.project.imageUrl && (
 						<div className='mb-6'>
-							<img
+							<Image
 								src={data.project.imageUrl}
 								alt={data.project.title}
+								width={800}
+								height={400}
 								className='h-48 w-full rounded-lg object-cover'
 							/>
 						</div>

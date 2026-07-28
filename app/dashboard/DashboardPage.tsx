@@ -9,6 +9,7 @@ import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { useRouter } from 'next/navigation';
 import { useDashboardStats } from '@/shared/hooks/useDashboardStats';
 import { Button, Card, Container, DashboardSkeleton, Modal } from '@/shared/ui';
+import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
 	const router = useRouter();
@@ -55,6 +56,12 @@ export default function DashboardPage() {
 					queryKey: ['dashboard-stats'],
 				}),
 			]);
+
+			toast.success('Project deleted successfully!');
+		},
+
+		onError: () => {
+			toast.error('Failed to delete project.');
 		},
 	});
 

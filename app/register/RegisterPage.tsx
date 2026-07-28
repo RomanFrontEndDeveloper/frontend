@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { authApi } from '@/shared/api';
+import toast from 'react-hot-toast';
 
 import {
 	registerSchema,
@@ -21,7 +22,15 @@ export default function RegisterPage() {
 		mutationFn: authApi.register,
 
 		onSuccess: () => {
+			toast.success('Account created successfully!');
+
 			router.push('/login');
+		},
+
+		onError: (error: any) => {
+			toast.error(
+				error?.response?.data?.message ?? 'Failed to create account.',
+			);
 		},
 	});
 

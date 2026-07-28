@@ -14,6 +14,7 @@ import {
 	useAddFavorite,
 	useRemoveFavorite,
 } from '@/shared/hooks/useFavorites';
+import toast from 'react-hot-toast';
 
 export default function ProjectsPage() {
 	const [search, setSearch] = useState('');
@@ -47,6 +48,20 @@ export default function ProjectsPage() {
 			queryClient.invalidateQueries({
 				queryKey: ['projects'],
 			});
+
+			queryClient.invalidateQueries({
+				queryKey: ['favorites'],
+			});
+
+			queryClient.invalidateQueries({
+				queryKey: ['dashboard-stats'],
+			});
+
+			toast.success('Project deleted successfully!');
+		},
+
+		onError: () => {
+			toast.error('Failed to delete project.');
 		},
 	});
 

@@ -9,6 +9,7 @@ import { loginSchema, type LoginFormData } from '@/shared/validation/auth';
 import { Button, Card, Divider, Input, InputError } from '@/shared/ui';
 import Link from 'next/link';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -41,9 +42,15 @@ export default function LoginPage() {
 				updatedAt: profile.user.updatedAt,
 			});
 
+			toast.success('Login successful!');
+
 			router.push('/dashboard');
-		} catch (error) {
+		} catch (error: any) {
 			console.error(error);
+
+			toast.error(
+				error?.response?.data?.message ?? 'Invalid email or password.',
+			);
 		}
 	};
 
