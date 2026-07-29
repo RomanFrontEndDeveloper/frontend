@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '@/shared/api';
 import { projectApi } from '@/shared/api/projectApi';
@@ -13,11 +12,16 @@ import {
 	Card,
 	Container,
 	DashboardSkeleton,
-	Modal,
-	AnimatedCard,
+	ProjectCard,
 } from '@/shared/ui';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+const Modal = dynamic(() =>
+	import('@/shared/ui/Modal').then((mod) => ({
+		default: mod.Modal,
+	})),
+);
 
 export default function DashboardPage() {
 	const router = useRouter();
@@ -129,7 +133,7 @@ export default function DashboardPage() {
 					</div>
 				</div>
 
-				<div className='grid gap-6 mt-10 md:grid-cols-2 xl:grid-cols-4'>
+				<div className='mt-10 grid grid-cols-2 gap-3 md:grid-cols-2 xl:grid-cols-4'>
 					{[
 						{
 							title: 'User',
@@ -172,18 +176,18 @@ export default function DashboardPage() {
 								boxShadow: '0 12px 30px rgba(0,0,0,0.2)',
 							}}
 						>
-							<Card className='flex min-h-34 flex-col'>
-								<h2 className='mb-2 text-xl font-semibold'>
+							<Card className='flex min-h-28 flex-col p-3 sm:min-h-32 sm:p-5'>
+								<h2 className='mb-1 text-sm font-semibold sm:text-xl'>
 									{item.title}
 								</h2>
 
 								<p
 									className={
 										item.title === 'Projects'
-											? 'text-4xl font-bold'
+											? 'text-2xl font-bold sm:text-4xl'
 											: item.title === 'Last Project'
-												? 'truncate'
-												: ''
+												? 'truncate text-sm sm:text-base'
+												: 'text-xs sm:text-base'
 									}
 								>
 									{item.value}
@@ -207,81 +211,18 @@ export default function DashboardPage() {
 					) : (
 						<div className='mb-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3'>
 							{projectsData?.projects.map((project, index) => (
-								<AnimatedCard
+								<ProjectCard
 									key={project._id}
+									project={project}
 									delay={index * 0.08}
-								>
-									<Card
-										key={project._id}
-										className='rounded-xl border border-gray-200 p-5 transition-shadow duration-300'
-									>
-										<div className='flex h-full flex-col'>
-											{project.imageUrl && (
-												<Image
-													src={project.imageUrl}
-													alt={project.title}
-													width={400}
-													height={160}
-													className='mb-4 h-40 w-full rounded-lg object-cover'
-												/>
-											)}
-
-											<h3 className='text-2xl font-bold'>
-												{project.title}
-											</h3>
-
-											<p className='mt-3 line-clamp-3 flex-1 text-gray-600'>
-												{project.description}
-											</p>
-
-											<p className='mt-4 text-sm text-gray-500'>
-												Created:{' '}
-												{new Date(
-													project.createdAt,
-												).toLocaleDateString()}
-											</p>
-
-											<div className='mt-6 grid grid-cols-3 gap-3'>
-												<Button
-													variant='secondary'
-													onClick={() =>
-														router.push(
-															`/projects/${project._id}`,
-														)
-													}
-												>
-													View
-												</Button>
-												<Button
-													className='flex-1'
-													onClick={() =>
-														router.push(
-															`/projects/${project._id}/edit`,
-														)
-													}
-												>
-													Edit
-												</Button>
-
-												<Button
-													className='flex-1 bg-red-600 hover:bg-red-700'
-													disabled={
-														deleteProjectMutation.isPending
-													}
-													onClick={() =>
-														handleDelete(
-															project._id,
-														)
-													}
-												>
-													{deleteProjectMutation.isPending
-														? 'Deleting...'
-														: 'Delete'}
-												</Button>
-											</div>
-										</div>
-									</Card>
-								</AnimatedCard>
+									onDelete={handleDelete}
+									onView={(id) =>
+										router.push(`/projects/${id}`)
+									}
+									onEdit={(id) =>
+										router.push(`/projects/${id}/edit`)
+									}
+								/>
 							))}
 						</div>
 					)}

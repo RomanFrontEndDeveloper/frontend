@@ -17,7 +17,7 @@ export const Navigation = () => {
 
 	return (
 		<nav>
-			<ul className='flex items-center gap-8'>
+			<ul className='flex flex-wrap items-center justify-center gap-x-6 gap-y-3'>
 				{links.map((link) => (
 					<li key={link.href}>
 						<Link

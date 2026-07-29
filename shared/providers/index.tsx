@@ -14,7 +14,17 @@ export const Providers = ({ children }: Props) => {
 			new QueryClient({
 				defaultOptions: {
 					queries: {
-						staleTime: 1000 * 60,
+						// Дані вважаються актуальними 5 хвилин
+						staleTime: 1000 * 60 * 5,
+
+						// Кеш зберігається 10 хвилин після останнього використання
+						gcTime: 1000 * 60 * 10,
+
+						// Не робити повторний запит при поверненні у вкладку
+						refetchOnWindowFocus: false,
+
+						// Одна повторна спроба при помилці
+						retry: 1,
 					},
 				},
 			}),

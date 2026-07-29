@@ -3,19 +3,22 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
-import { Card, Button, Input, AnimatedCard, Modal } from '@/shared/ui';
+import {
+	Button,
+	Input,
+	Modal,
+	ProjectCard,
+	Skeleton,
+	SkeletonCard,
+} from '@/shared/ui';
 import { projectApi } from '@/shared/api/projectApi';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Skeleton, SkeletonCard } from '@/shared/ui';
 import {
 	useFavorites,
 	useAddFavorite,
 	useRemoveFavorite,
 } from '@/shared/hooks/useFavorites';
 import toast from 'react-hot-toast';
-
 interface Favorite {
 	_id: string;
 	project: {
@@ -91,6 +94,14 @@ export default function ProjectsPage() {
 
 	const projects = data?.projects ?? [];
 	const totalPages = data?.totalPages ?? 1;
+
+	const favoriteIds = new Set(
+		favoritesData?.favorites
+			?.map((favorite: Favorite) => favorite.project?._id)
+			.filter((id: string | null | undefined): id is string =>
+				Boolean(id),
+			),
+	);
 
 	const handleDelete = (id: string) => {
 		setProjectToDelete(id);
@@ -176,90 +187,21 @@ export default function ProjectsPage() {
 					</div>
 				) : (
 					<div className='grid auto-rows-fr grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'>
-						{projects.map((project, index) => {
-							const isFavorite =
-								favoritesData?.favorites?.some(
-									(favorite: Favorite) =>
-										favorite.project?._id === project._id,
-								) ?? false;
-
-							return (
-								<AnimatedCard
-									key={project._id}
-									delay={index * 0.08}
-								>
-									<Card className='flex h-full flex-col rounded-xl border border-border p-6'>
-										<h2 className='break-words text-2xl font-bold'>
-											{project.title}
-										</h2>
-
-										{project.imageUrl && (
-											<Image
-												src={project.imageUrl}
-												alt={project.title}
-												width={600}
-												height={300}
-												className='my-4 h-56 w-full rounded-xl object-cover'
-											/>
-										)}
-
-										<p className='flex-1 line-clamp-3 text-muted-foreground'>
-											{project.description}
-										</p>
-
-										<div className='mt-6 space-y-3'>
-											<div className='grid grid-cols-3 gap-3'>
-												<Link
-													href={`/projects/${project._id}/edit`}
-													className='flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700'
-												>
-													Edit
-												</Link>
-
-												<Button
-													variant='secondary'
-													className='w-full'
-													onClick={() =>
-														router.push(
-															`/projects/${project._id}`,
-														)
-													}
-												>
-													View
-												</Button>
-
-												<Button
-													type='button'
-													className='w-full bg-red-600 hover:bg-red-700'
-													onClick={() =>
-														handleDelete(
-															project._id,
-														)
-													}
-												>
-													Delete
-												</Button>
-											</div>
-
-											<Button
-												variant='secondary'
-												className='w-full'
-												onClick={() =>
-													handleFavorite(
-														project._id,
-														isFavorite,
-													)
-												}
-											>
-												{isFavorite
-													? '💖 Remove Favorite'
-													: '🤍 Add Favorite'}
-											</Button>
-										</div>
-									</Card>
-								</AnimatedCard>
-							);
-						})}
+						{projects.map((project, index) => (
+							<ProjectCard
+								key={project._id}
+								project={project}
+								delay={index * 0.08}
+								showFavoriteButton
+								isFavorite={favoriteIds.has(project._id)}
+								onFavorite={handleFavorite}
+								onDelete={handleDelete}
+								onView={(id) => router.push(`/projects/${id}`)}
+								onEdit={(id) =>
+									router.push(`/projects/${id}/edit`)
+								}
+							/>
+						))}
 					</div>
 				)}
 			</div>

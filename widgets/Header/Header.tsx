@@ -12,16 +12,16 @@ export const Header = () => {
 	return (
 		<header className='border-b border-gray-200 transition-colors duration-200 dark:border-gray-700'>
 			<Container>
-				<div className='flex flex-col gap-4 py-4 lg:h-16 lg:flex-row lg:items-center lg:justify-between'>
+				<div className='flex flex-col gap-5 py-4 lg:flex-row lg:items-center lg:justify-between'>
 					<Logo />
 
 					{user && (
-						<p className='text-center text-sm text-gray-700 dark:text-gray-300 lg:text-left'>
+						<p className='text-center break-all text-sm text-gray-700 dark:text-gray-300 lg:text-left'>
 							{user.email}
 						</p>
 					)}
 
-					<div className='flex flex-wrap items-center justify-center gap-4 lg:justify-end lg:gap-6'>
+					<div className='flex w-full flex-col items-center gap-4 lg:w-auto lg:flex-row lg:justify-end'>
 						<Navigation />
 
 						<div>

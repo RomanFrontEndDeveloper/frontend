@@ -115,9 +115,9 @@ export default function ProjectPage() {
 							</p>
 						</div>
 
-						<div className='mt-8 flex gap-4'>
+						<div className='mt-8 flex flex-col gap-3 sm:flex-row'>
 							<Button
-								className='min-w-40'
+								className='w-full sm:flex-1'
 								onClick={() =>
 									router.push(`/projects/${project._id}/edit`)
 								}
@@ -127,14 +127,15 @@ export default function ProjectPage() {
 
 							<Button
 								variant='secondary'
-								className='min-w-32'
+								className='w-full sm:flex-1'
 								onClick={() => router.back()}
 							>
 								Back
 							</Button>
+
 							<Button
 								variant='secondary'
-								className='min-w-44'
+								className='w-full sm:flex-1'
 								onClick={handleFavorite}
 							>
 								{isFavorite
