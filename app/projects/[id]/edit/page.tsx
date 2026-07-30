@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Image from 'next/image';
+import toast from 'react-hot-toast';
+
 import { projectApi } from '@/shared/api/projectApi';
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
 import { Button, Card, Input, PageLoader } from '@/shared/ui';
-import toast from 'react-hot-toast';
-import Image from 'next/image';
 
 export default function EditProjectPage() {
 	const params = useParams<{ id: string }>();
@@ -16,7 +17,28 @@ export default function EditProjectPage() {
 
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
-	const [image, setImage] = useState<File | undefined>();
+	const [image, setImage] = useState<File>();
+	const [preview, setPreview] = useState<string | null>(null);
+
+	const { data, isLoading, error } = useQuery({
+		queryKey: ['project', params.id],
+		queryFn: () => projectApi.getById(params.id),
+	});
+
+	useEffect(() => {
+		if (!data) return;
+
+		setTitle(data.project.title);
+		setDescription(data.project.description);
+	}, [data]);
+
+	useEffect(() => {
+		return () => {
+			if (preview) {
+				URL.revokeObjectURL(preview);
+			}
+		};
+	}, [preview]);
 
 	const updateProjectMutation = useMutation({
 		mutationFn: (data: {
@@ -54,20 +76,6 @@ export default function EditProjectPage() {
 		},
 	});
 
-	const { data, isLoading, error } = useQuery({
-		queryKey: ['project', params.id],
-		queryFn: () => projectApi.getById(params.id),
-	});
-
-	useEffect(() => {
-		if (!data) return;
-
-		// eslint-disable-next-line react-hooks/set-state-in-effect
-		setTitle(data.project.title);
-
-		setDescription(data.project.description);
-	}, [data]);
-
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 
@@ -103,7 +111,7 @@ export default function EditProjectPage() {
 					{data?.project.imageUrl && (
 						<div className='mb-6'>
 							<Image
-								src={data.project.imageUrl}
+								src={preview || data.project.imageUrl}
 								alt={`Preview image for ${data.project.title}`}
 								width={800}
 								height={400}
@@ -150,20 +158,29 @@ export default function EditProjectPage() {
 								onChange={(e) => {
 									const file = e.target.files?.[0];
 
-									if (file) {
-										setImage(file);
+									if (!file) return;
+
+									setImage(file);
+
+									if (preview) {
+										URL.revokeObjectURL(preview);
 									}
+
+									setPreview(URL.createObjectURL(file));
 								}}
 							/>
 						</div>
+
 						<div className='mt-8 flex gap-4'>
 							<Button
+								type='button'
 								variant='secondary'
 								className='min-w-32'
 								onClick={() => router.back()}
 							>
 								Back
 							</Button>
+
 							<Button
 								type='submit'
 								className='w-full'
