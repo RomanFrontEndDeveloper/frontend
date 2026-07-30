@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
@@ -40,16 +40,25 @@ export default function EditProjectPage() {
 		};
 	}, [preview]);
 
+	const imageSrc = useMemo(() => {
+		if (preview) return preview;
+		if (data?.project.imageUrl) return data.project.imageUrl;
+
+		return null;
+	}, [preview, data]);
+
 	const updateProjectMutation = useMutation({
-		mutationFn: (data: {
+		mutationFn: (project: {
 			title: string;
 			description: string;
 			image?: File;
-		}) => projectApi.update(params.id, data),
+		}) => projectApi.update(params.id, project),
 
 		onSuccess: async () => {
 			await Promise.all([
-				queryClient.invalidateQueries({ queryKey: ['projects'] }),
+				queryClient.invalidateQueries({
+					queryKey: ['projects'],
+				}),
 				queryClient.invalidateQueries({
 					queryKey: ['project', params.id],
 				}),
@@ -65,7 +74,6 @@ export default function EditProjectPage() {
 			]);
 
 			toast.success('Project updated successfully!');
-
 			router.push('/projects');
 		},
 
@@ -95,7 +103,9 @@ export default function EditProjectPage() {
 	if (error || !data) {
 		return (
 			<ProtectedRoute>
-				<p>Something went wrong.</p>
+				<div className='flex justify-center py-20'>
+					<p>Something went wrong.</p>
+				</div>
 			</ProtectedRoute>
 		);
 	}
@@ -127,20 +137,36 @@ export default function EditProjectPage() {
 								}}
 							/>
 
-							<Image
-								src={preview || data.project.imageUrl}
-								alt={title}
-								width={900}
-								height={500}
-								priority
-								className='h-56 w-full rounded-xl object-cover transition duration-300 group-hover:scale-105'
-							/>
+							{imageSrc ? (
+								<>
+									<Image
+										src={imageSrc}
+										alt={title}
+										width={900}
+										height={500}
+										priority
+										className='h-56 w-full rounded-xl object-cover transition duration-300 group-hover:scale-105'
+									/>
 
-							<div className='absolute inset-0 flex items-center justify-center bg-black/0 transition duration-300 group-hover:bg-black/50'>
-								<div className='translate-y-3 rounded-lg bg-slate-900/90 px-5 py-3 text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100'>
-									📷 Change image
+									<div className='absolute inset-0 flex items-center justify-center bg-black/0 transition duration-300 group-hover:bg-black/50'>
+										<div className='translate-y-3 rounded-lg bg-slate-900/90 px-5 py-3 text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100'>
+											📷 Change image
+										</div>
+									</div>
+								</>
+							) : (
+								<div className='flex h-56 flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-600 bg-slate-800/40 transition hover:border-cyan-500 hover:bg-slate-800'>
+									<div className='text-6xl'>🖼️</div>
+
+									<p className='mt-4 text-lg font-semibold'>
+										Choose image
+									</p>
+
+									<p className='mt-2 text-sm text-slate-400'>
+										Click to upload
+									</p>
 								</div>
-							</div>
+							)}
 						</label>
 
 						{image && (
@@ -173,7 +199,7 @@ export default function EditProjectPage() {
 							/>
 						</div>
 
-						<div className='mt-8 flex gap-4'>
+						<div className='flex gap-4 pt-4'>
 							<Button
 								type='button'
 								variant='secondary'
