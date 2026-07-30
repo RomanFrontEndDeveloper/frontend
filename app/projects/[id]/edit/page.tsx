@@ -45,13 +45,11 @@ export default function EditProjectPage() {
 			title: string;
 			description: string;
 			image?: File;
-		}) => projectApi.update(params.id as string, data),
+		}) => projectApi.update(params.id, data),
 
 		onSuccess: async () => {
 			await Promise.all([
-				queryClient.invalidateQueries({
-					queryKey: ['projects'],
-				}),
+				queryClient.invalidateQueries({ queryKey: ['projects'] }),
 				queryClient.invalidateQueries({
 					queryKey: ['project', params.id],
 				}),
@@ -76,8 +74,8 @@ export default function EditProjectPage() {
 		},
 	});
 
-	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 
 		updateProjectMutation.mutate({
 			title,
@@ -94,7 +92,7 @@ export default function EditProjectPage() {
 		);
 	}
 
-	if (error) {
+	if (error || !data) {
 		return (
 			<ProtectedRoute>
 				<p>Something went wrong.</p>
@@ -108,21 +106,49 @@ export default function EditProjectPage() {
 				<Card>
 					<h1 className='mb-6 text-3xl font-bold'>Edit Project</h1>
 
-					{data?.project.imageUrl && (
-						<div className='mb-6'>
+					<form onSubmit={handleSubmit} className='space-y-6'>
+						<label className='group relative block cursor-pointer overflow-hidden rounded-xl'>
+							<input
+								type='file'
+								accept='image/*'
+								className='hidden'
+								onChange={(e) => {
+									const file = e.target.files?.[0];
+
+									if (!file) return;
+
+									setImage(file);
+
+									if (preview) {
+										URL.revokeObjectURL(preview);
+									}
+
+									setPreview(URL.createObjectURL(file));
+								}}
+							/>
+
 							<Image
 								src={preview || data.project.imageUrl}
-								alt={`Preview image for ${data.project.title}`}
-								width={800}
-								height={400}
-								sizes='100vw'
+								alt={title}
+								width={900}
+								height={500}
 								priority
-								className='h-48 w-full rounded-lg object-cover'
+								className='h-56 w-full rounded-xl object-cover transition duration-300 group-hover:scale-105'
 							/>
-						</div>
-					)}
 
-					<form onSubmit={handleSubmit} className='space-y-4'>
+							<div className='absolute inset-0 flex items-center justify-center bg-black/0 transition duration-300 group-hover:bg-black/50'>
+								<div className='translate-y-3 rounded-lg bg-slate-900/90 px-5 py-3 text-white opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100'>
+									📷 Change image
+								</div>
+							</div>
+						</label>
+
+						{image && (
+							<p className='text-center text-sm font-medium text-cyan-400'>
+								Selected: {image.name}
+							</p>
+						)}
+
 						<div>
 							<label className='mb-2 block font-medium'>
 								Title
@@ -144,30 +170,6 @@ export default function EditProjectPage() {
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
 								placeholder='Project description'
-							/>
-						</div>
-
-						<div>
-							<label className='mb-2 block font-medium'>
-								New image
-							</label>
-
-							<input
-								type='file'
-								accept='image/*'
-								onChange={(e) => {
-									const file = e.target.files?.[0];
-
-									if (!file) return;
-
-									setImage(file);
-
-									if (preview) {
-										URL.revokeObjectURL(preview);
-									}
-
-									setPreview(URL.createObjectURL(file));
-								}}
 							/>
 						</div>
 
