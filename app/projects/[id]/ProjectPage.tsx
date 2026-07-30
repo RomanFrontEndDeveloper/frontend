@@ -1,16 +1,19 @@
 'use client';
 
-import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+
+import { projectApi } from '@/shared/api/projectApi';
+
 import {
 	useFavorites,
 	useAddFavorite,
 	useRemoveFavorite,
 } from '@/shared/hooks/useFavorites';
-import { projectApi } from '@/shared/api/projectApi';
+
 import { ProtectedRoute } from '@/shared/providers/auth/ProtectedRoute';
-import { Button, Card, Container, PageLoader } from '@/shared/ui';
+
+import { Button, Container, PageLoader, ProjectCard } from '@/shared/ui';
 
 interface Favorite {
 	_id: string;
@@ -73,51 +76,37 @@ export default function ProjectPage() {
 	return (
 		<ProtectedRoute>
 			<Container>
-				<div className='mx-auto my-10 max-w-5xl'>
-					<h1 className='mb-8 text-center text-4xl font-bold'>
+				<div className='mx-auto my-14 max-w-3xl'>
+					<h1 className='mb-10 text-center text-4xl font-bold'>
 						Project Details
 					</h1>
-					<Card className='p-6'>
-						{project.imageUrl && (
-							<Image
-								src={project.imageUrl}
-								alt={project.title}
-								width={900}
-								height={500}
-								className='mb-6 h-[350px] w-full rounded-xl object-cover'
-							/>
-						)}
 
-						<h1 className='mb-4 text-4xl font-bold'>
-							{project.title}
-						</h1>
+					<ProjectCard project={project} hideActions>
+						<div className='mt-8 rounded-xl border border-border bg-muted/20 p-5'>
+							<div className='space-y-4 text-muted-foreground'>
+								<p>
+									<strong>Created:</strong>{' '}
+									{new Date(
+										project.createdAt,
+									).toLocaleDateString()}
+								</p>
 
-						<p className='mb-8 text-lg text-gray-600'>
-							{project.description}
-						</p>
+								<p>
+									<strong>Updated:</strong>{' '}
+									{new Date(
+										project.updatedAt,
+									).toLocaleDateString()}
+								</p>
 
-						<div className='space-y-3 text-gray-600'>
-							<p>
-								<strong>Created:</strong>{' '}
-								{new Date(
-									project.createdAt,
-								).toLocaleDateString()}
-							</p>
-
-							<p>
-								<strong>Updated:</strong>{' '}
-								{new Date(
-									project.updatedAt,
-								).toLocaleDateString()}
-							</p>
-							<p className='mt-4 text-sm text-gray-500'>
-								ID: {project._id}
-							</p>
+								<p className='text-sm'>
+									<strong>ID:</strong> {project._id}
+								</p>
+							</div>
 						</div>
 
-						<div className='mt-8 flex flex-col gap-3 sm:flex-row'>
+						<div className='mt-8 flex flex-col gap-4 sm:flex-row'>
 							<Button
-								className='w-full sm:flex-1'
+								className='flex-1'
 								onClick={() =>
 									router.push(`/projects/${project._id}/edit`)
 								}
@@ -127,7 +116,7 @@ export default function ProjectPage() {
 
 							<Button
 								variant='secondary'
-								className='w-full sm:flex-1'
+								className='flex-1'
 								onClick={() => router.back()}
 							>
 								Back
@@ -135,7 +124,7 @@ export default function ProjectPage() {
 
 							<Button
 								variant='secondary'
-								className='w-full sm:flex-1'
+								className='flex-1'
 								onClick={handleFavorite}
 							>
 								{isFavorite
@@ -143,7 +132,7 @@ export default function ProjectPage() {
 									: '🤍 Add Favorite'}
 							</Button>
 						</div>
-					</Card>
+					</ProjectCard>
 				</div>
 			</Container>
 		</ProtectedRoute>

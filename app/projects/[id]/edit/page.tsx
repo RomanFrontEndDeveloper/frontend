@@ -104,9 +104,11 @@ export default function EditProjectPage() {
 						<div className='mb-6'>
 							<Image
 								src={data.project.imageUrl}
-								alt={data.project.title}
+								alt={`Preview image for ${data.project.title}`}
 								width={800}
 								height={400}
+								sizes='100vw'
+								priority
 								className='h-48 w-full rounded-lg object-cover'
 							/>
 						</div>
