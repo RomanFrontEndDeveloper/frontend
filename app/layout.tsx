@@ -19,11 +19,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 	title: {
-		default: 'FreelanceHub',
-		template: '%s | FreelanceHub',
+		default: 'Roman-FreelanceHub',
+		template: '%s | Roman-FreelanceHub',
 	},
 	description:
-		'FreelanceHub is a modern freelance marketplace built with Next.js, React, TypeScript and Node.js.',
+		'Roman-FreelanceHub is a modern freelance marketplace built with Next.js, React, TypeScript and Node.js.',
 
 	keywords: [
 		'freelance',
@@ -43,9 +43,9 @@ export const metadata: Metadata = {
 
 	creator: 'Roman Okhremov',
 
-	applicationName: 'FreelanceHub',
+	applicationName: 'Roman-FreelanceHub',
 
-	metadataBase: new URL('https://freelancehub.com'),
+	metadataBase: new URL('https://Roman-FreelanceHub.com'),
 
 	alternates: {
 		canonical: '/',
@@ -56,11 +56,11 @@ export const metadata: Metadata = {
 	},
 
 	openGraph: {
-		title: 'FreelanceHub',
+		title: 'Roman-FreelanceHub',
 		description:
 			'Modern freelance marketplace built with Next.js, React, TypeScript and Node.js.',
-		url: 'https://freelancehub.com',
-		siteName: 'FreelanceHub',
+		url: 'https://Roman-FreelanceHub.com',
+		siteName: 'Roman-FreelanceHub',
 		type: 'website',
 		locale: 'en_US',
 		images: [
@@ -68,14 +68,14 @@ export const metadata: Metadata = {
 				url: '/og-image.png',
 				width: 1200,
 				height: 630,
-				alt: 'FreelanceHub',
+				alt: 'Roman-FreelanceHub',
 			},
 		],
 	},
 
 	twitter: {
 		card: 'summary_large_image',
-		title: 'FreelanceHub',
+		title: 'Roman-FreelanceHub',
 		description:
 			'Modern freelance marketplace built with Next.js, React, TypeScript and Node.js.',
 		images: ['/og-image.png'],

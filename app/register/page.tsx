@@ -3,7 +3,7 @@ import RegisterPage from './RegisterPage';
 
 export const metadata: Metadata = {
 	title: 'Register',
-	description: 'Create a FreelanceHub account.',
+	description: 'Create a Roman-FreelanceHub account.',
 };
 
 export default function Page() {

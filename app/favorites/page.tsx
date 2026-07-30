@@ -3,7 +3,7 @@ import FavoritesPage from './FavoritesPage';
 
 export const metadata: Metadata = {
 	title: 'Favorites',
-	description: 'View your favorite projects on FreelanceHub.',
+	description: 'View your favorite projects on Roman-FreelanceHub.',
 };
 
 export default function Page() {

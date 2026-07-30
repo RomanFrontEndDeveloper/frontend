@@ -66,7 +66,7 @@ export default function LoginPage() {
 				<h1 className='text-3xl font-bold text-gray-900'>Login</h1>
 
 				<p className='mt-2 text-gray-500'>
-					Welcome back to FreelanceHub.
+					Welcome back to Roman-FreelanceHub.
 				</p>
 
 				<Divider className='my-6' />

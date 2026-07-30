@@ -3,7 +3,7 @@ import ProfilePage from './ProfilePage';
 
 export const metadata: Metadata = {
 	title: 'Profile',
-	description: 'Manage your FreelanceHub profile.',
+	description: 'Manage your Roman-FreelanceHub profile.',
 };
 
 export default function Page() {
